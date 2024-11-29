@@ -133,9 +133,9 @@ class Mup3d(object):
         self.phinp = None
         self.components = None
         self.fixed_components = None
-        self.nlay = nlay
-        self.nrow = nrow
-        self.ncol = ncol
+        self.nlay = int(nlay)
+        self.nrow = int(nrow)
+        self.ncol = int(ncol)
         self.ncpl = self.nlay*self.nrow*self.ncol
 
         if self.solutions.ic is None:
