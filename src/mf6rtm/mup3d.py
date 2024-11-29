@@ -105,7 +105,16 @@ phase_types = {
 
 
 class Mup3d(object):
-    def __init__(self, name, solutions, nlay, nrow, ncol):
+    def __init__(self, name=None, solutions=None, nlay=None, nrow=None, ncol=None):
+        if solutions is None and isinstance(name, Solutions):
+            # New style: first argument is solutions
+            solutions = name
+            name = None
+        # Validate required parameters
+        if solutions is None:
+            raise ValueError("solutions parameter is required")
+        if any(param is None for param in [nlay, nrow, ncol]):
+            raise ValueError("nlay, nrow, and ncol parameters are required")
         self.name = name
         self.wd = None
         self.charge_offset = 0.0
