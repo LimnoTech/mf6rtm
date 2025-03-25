@@ -113,6 +113,7 @@ class Mup3d(object):
         # Validate required parameters
         if solutions is None:
             raise ValueError("solutions parameter is required")
+        ##TODO: assumes that grid is structured
         if any(param is None for param in [nlay, nrow, ncol]):
             raise ValueError("nlay, nrow, and ncol parameters are required")
         self.name = name
@@ -147,6 +148,7 @@ class Mup3d(object):
     def set_fixed_components(self, fixed_components):
         '''Set the fixed components for the MF6RTM model. These are the components that are not transported during the simulation.
         '''
+        ##TODO: we will want all components to not be transported via phreeqc (but by mf6), how is that relevant here? all coments are fixed_components?
         # FIXME: implemented but commented in main coupling loop
         self.fixed_components = fixed_components
 
@@ -167,7 +169,7 @@ class Mup3d(object):
 
         # Proceed with the common logic
         if isinstance(phase.ic, (int, float)):
-            phase.ic = np.reshape([phase.ic]*self.ncpl, (self.nlay, self.nrow, self.ncol))
+            phase.ic = np.reshape([phase.ic]*self.ncpl, (self.nlay, self.nrow, self.ncol)) ##TODO: implement for disv grid
         phase.data = {i: phase.data[key] for i, key in enumerate(phase.data.keys())}
         assert phase.ic.shape == (self.nlay, self.nrow, self.ncol), f'Initial conditions array must be an array of the shape ({self.nlay}, {self.nrow}, {self.ncol}) not {phase.ic.shape}'
 
@@ -180,7 +182,7 @@ class Mup3d(object):
         assert isinstance(exchanger, ExchangePhases), 'exchanger must be an instance of the Exchange class'
         # exchanger.data = {i: exchanger.data[key] for i, key in enumerate(exchanger.data.keys())}
         if isinstance(exchanger.ic, (int, float)):
-            exchanger.ic = np.reshape([exchanger.ic]*self.ncpl, (self.nlay, self.nrow, self.ncol))
+            exchanger.ic = np.reshape([exchanger.ic]*self.ncpl, (self.nlay, self.nrow, self.ncol)) ##TODO: implement for disv grid
         assert exchanger.ic.shape == (self.nlay, self.nrow, self.ncol), f'Initial conditions array must be an array of the shape ({self.nlay}, {self.nrow}, {self.ncol}) not {exchanger.ic.shape}'
         self.exchange_phases = exchanger
 
@@ -192,7 +194,7 @@ class Mup3d(object):
         eq_phases.data = {i: eq_phases.data[key] for i, key in enumerate(eq_phases.data.keys())}
         self.equilibrium_phases = eq_phases
         if isinstance(self.equilibrium_phases.ic, (int, float)):
-            self.equilibrium_phases.ic = np.reshape([self.equilibrium_phases.ic]*self.ncpl, (self.nlay, self.nrow, self.ncol))
+            self.equilibrium_phases.ic = np.reshape([self.equilibrium_phases.ic]*self.ncpl, (self.nlay, self.nrow, self.ncol)) ##TODO: implement for disv grid
         assert self.equilibrium_phases.ic.shape == (self.nlay, self.nrow, self.ncol), f'Initial conditions array must be an array of the shape ({self.nlay}, {self.nrow}, {self.ncol}) not {self.equilibrium_phases.ic.shape}'
 
     def set_charge_offset(self, charge_offset):
@@ -422,6 +424,7 @@ class Mup3d(object):
         ic1 = np.ones((self.ncpl, 7), dtype=int)*-1
 
         # this gets a column slice
+        ##TODO: reshaping back to single dimension, what happens between initializaiton and here that has to be in nlay,nrow,ncol shape?
         ic1[:, 0] = np.reshape(self.solutions.ic, self.ncpl)
 
         if isinstance(self.equilibrium_phases, EquilibriumPhases):
